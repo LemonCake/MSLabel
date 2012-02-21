@@ -31,7 +31,7 @@
 - (void)drawTextInRect:(CGRect)rect {
     NSArray *slicedStrings = [self stringsFromText:self.text];
     [self.textColor set];
-
+    
     for (int i = 0; i < slicedStrings.count; i++) {
         if (i + 1 > self.numberOfLines && self.numberOfLines != 0)
             break;
@@ -48,7 +48,7 @@
         } else if (self.textAlignment == UITextAlignmentRight) {
             drawWidth = (self.frame.size.width - [line sizeWithFont:self.font].width);
         }
-
+        
         [line drawAtPoint:CGPointMake(drawWidth, drawHeight) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
     }
 }
@@ -64,7 +64,7 @@
 #pragma mark - Private Methods
 
 - (NSArray *)stringsFromText:(NSString *)string {
-    NSMutableArray *stringsArray = [[string componentsSeparatedByString:@" "] mutableCopy];
+    NSMutableArray *stringsArray = [[[string componentsSeparatedByString:@" "] mutableCopy] autorelease];
     NSMutableArray *slicedString = [NSMutableArray array];
     
     while (stringsArray.count != 0) {
@@ -78,6 +78,10 @@
                 line = [line stringByAppendingFormat:@"%@ ", word];
                 [wordsToRemove addIndex:i];
             } else {
+                if (line.length == 0) {
+                    line = [line stringByAppendingFormat:@"%@ ", word];
+                    [wordsToRemove addIndex:i];
+                }
                 break;
             }
         }
