@@ -47,12 +47,6 @@
     return self;
 }
 
-- (void)setup
-{
-    _lineHeight = 10;
-    _verticalAlign = MSLabelVerticalAlignMiddle;
-}
-
 
 #pragma mark - Drawing
 
@@ -137,6 +131,12 @@
 
 
 #pragma mark - Private Methods
+
+- (void)setup
+{
+    _lineHeight = 10;
+    _verticalAlign = MSLabelVerticalAlignMiddle;
+}
 
 - (NSArray *)stringsFromText:(NSString *)string 
 {
