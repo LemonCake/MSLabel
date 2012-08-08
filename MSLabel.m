@@ -9,7 +9,7 @@
 #import "MSLabel.h"
 
 // small buffer to allow for characters like g,y etc 
-static const int kAlignBuffer = 5;
+static const int kAlignmentBuffer = 5;
 
 @interface MSLabel ()
 
@@ -21,7 +21,7 @@ static const int kAlignBuffer = 5;
 @implementation MSLabel
 
 @synthesize lineHeight = _lineHeight;
-@synthesize verticalAlign = _verticalAlign;
+@synthesize verticalAlignment = _verticalAlignment;
 
 
 #pragma mark - Initilisation
@@ -64,7 +64,7 @@ static const int kAlignBuffer = 5;
         numLines = self.numberOfLines;
     }
     
-    int drawY = (self.frame.size.height / 2 - (_lineHeight * numLines) / 2) - kAlignBuffer;    
+    int drawY = (self.frame.size.height / 2 - (_lineHeight * numLines) / 2) - kAlignmentBuffer;    
     
     for (int i = 0; i < numLines; i++) 
     {        
@@ -72,14 +72,14 @@ static const int kAlignBuffer = 5;
         NSString *line = [slicedStrings objectAtIndex:i];
         
         // calculate draw Y based on alignment
-        switch (_verticalAlign) 
+        switch (_verticalAlignment) 
         {
-            case MSLabelVerticalAlignTop:
+            case MSLabelVerticalAlignmentTop:
             {
                 drawY = i * _lineHeight;
             }
                 break;
-            case MSLabelVerticalAlignMiddle:
+            case MSLabelVerticalAlignmentMiddle:
             {
                 if(i > 0)
                 {
@@ -87,9 +87,9 @@ static const int kAlignBuffer = 5;
                 }
             }
                 break;
-            case MSLabelVerticalAlignBottom:
+            case MSLabelVerticalAlignmentBottom:
             {
-                drawY = (self.frame.size.height - ((i + 1) * _lineHeight)) - kAlignBuffer;
+                drawY = (self.frame.size.height - ((i + 1) * _lineHeight)) - kAlignmentBuffer;
             }
                 break;
             default:
@@ -102,7 +102,7 @@ static const int kAlignBuffer = 5;
                 break;
         }
         
-        // calculate draw X based on textAlignment
+        // calculate draw X based on textAlignmentment
         int drawX = 0; 
         
         if (self.textAlignment == UITextAlignmentCenter) 
@@ -138,7 +138,7 @@ static const int kAlignBuffer = 5;
 - (void)setup
 {
     _lineHeight = 10;
-    _verticalAlign = MSLabelVerticalAlignBottom;
+    _verticalAlignment = MSLabelVerticalAlignmentMiddle;
 }
 
 - (NSArray *)stringsFromText:(NSString *)string 
