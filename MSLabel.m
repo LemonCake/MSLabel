@@ -10,25 +10,54 @@
 
 @interface MSLabel ()
 
+- (void)setup;
 - (NSArray *)stringsFromText:(NSString *)string;
 
 @end
 
 @implementation MSLabel
-@synthesize lineHeight=_lineHeight;
-@synthesize anchorBottom=_anchorBottom;
 
-- (id)initWithFrame:(CGRect)frame {
+@synthesize lineHeight = _lineHeight;
+@synthesize verticalAlign = _verticalAlign;
+
+
+#pragma mark - Initilisation
+
+- (id)initWithFrame:(CGRect)frame 
+{
     self = [super initWithFrame:frame];
     
-    if (self) {
-        _lineHeight = 10;
+    if (self) 
+    {
+        [self setup];
     }
     
     return self;
 }
 
-- (void)drawTextInRect:(CGRect)rect {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    
+    if(self)
+    {
+        [self setup];
+    }
+    
+    return self;
+}
+
+- (void)setup
+{
+    _lineHeight = 10;
+    _verticalAlign = MSLabelVerticalAlignMiddle;
+}
+
+
+#pragma mark - Drawing
+
+- (void)drawTextInRect:(CGRect)rect 
+{
     NSArray *slicedStrings = [self stringsFromText:self.text];
     [self.textColor set];
     
@@ -37,40 +66,75 @@
     {
         numLines = self.numberOfLines;
     }
-    int drawHeight = self.frame.size.height / 2 - (_lineHeight * numLines) / 2;
-    int drawPos = drawHeight;
-    for (int i = 0; i < numLines; i++) {        
+    
+    int drawY = self.frame.size.height / 2 - (_lineHeight * numLines) / 2;    
+    
+    for (int i = 0; i < numLines; i++) 
+    {        
+        
         NSString *line = [slicedStrings objectAtIndex:i];
         
-        // calculate drawHeight based on anchor
-        //int drawHeight = ((self.frame.size.height - ((slicedStrings.count - i) * _lineHeight) ) / 2 ); 
-        
-        if(i > 0)
+        // calculate draw Y based on alignment
+        switch (_verticalAlign) 
         {
-            drawPos += _lineHeight;            
+            case MSLabelVerticalAlignTop:
+            {
+                drawY = i * _lineHeight;
+            }
+                break;
+            case MSLabelVerticalAlignMiddle:
+            {
+                if(i > 0)
+                {
+                    drawY += _lineHeight;            
+                }
+            }
+                break;
+            case MSLabelVerticalAlignBottom:
+            {
+                drawY = self.frame.size.height - ((i + 1) * _lineHeight);
+            }
+                break;
+            default:
+            {
+                if(i > 0)
+                {
+                    drawY += _lineHeight;            
+                }
+            }
+                break;
         }
         
-        //drawHeight = drawHeight + _lineHeight * slicedStrings.count - i;
+        // calculate draw X based on textAlignment
+        int drawX = 0; 
         
-        // calculate drawWidth based on textAlignment
-        int drawWidth = 0; 
-        if (self.textAlignment == UITextAlignmentCenter) {
-            drawWidth = floorf((self.frame.size.width - [line sizeWithFont:self.font].width) / 2);
-        } else if (self.textAlignment == UITextAlignmentRight) {
-            drawWidth = (self.frame.size.width - [line sizeWithFont:self.font].width);
+        if (self.textAlignment == UITextAlignmentCenter) 
+        {
+            drawX = floorf((self.frame.size.width - [line sizeWithFont:self.font].width) / 2);
+        } 
+        else if (self.textAlignment == UITextAlignmentRight) 
+        {
+            drawX = (self.frame.size.width - [line sizeWithFont:self.font].width);
         }
         
-        [line drawAtPoint:CGPointMake(drawWidth, drawPos) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
+        [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
     }
 }
 
+
 #pragma mark - Properties
 
-- (void)setLineHeight:(int)lineHeight {
-    if (_lineHeight == lineHeight) { return; }
+- (void)setLineHeight:(int)lineHeight 
+{
+    if (_lineHeight == lineHeight) 
+    { 
+        return; 
+    }
+    
     _lineHeight = lineHeight;
     [self setNeedsDisplay];
 }
+
 
 #pragma mark - Private Methods
 

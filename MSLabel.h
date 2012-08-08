@@ -8,11 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
-@interface MSLabel : UILabel {
+typedef enum {
+    MSLabelVerticalAlignTop,
+    MSLabelVerticalAlignMiddle,
+    MSLabelVerticalAlignBottom
+} MSLabelVerticalAlign;
+
+@interface MSLabel : UILabel 
+{
     int _lineHeight;
-    BOOL _anchorBottom;
 }
 
 @property (nonatomic, assign) int lineHeight;
-@property (nonatomic, assign) BOOL anchorBottom;
+@property (nonatomic, assign) MSLabelVerticalAlign verticalAlign;
+
 @end
