@@ -8,88 +8,175 @@
 
 #import "MSLabel.h"
 
+// small buffer to allow for characters like g,y etc 
+static const int kAlignmentBuffer = 5;
+
 @interface MSLabel ()
 
+- (void)setup;
 - (NSArray *)stringsFromText:(NSString *)string;
 
 @end
 
 @implementation MSLabel
-@synthesize lineHeight=_lineHeight;
-@synthesize anchorBottom=_anchorBottom;
 
-- (id)initWithFrame:(CGRect)frame {
+@synthesize lineHeight = _lineHeight;
+@synthesize verticalAlignment = _verticalAlignment;
+
+
+#pragma mark - Initilisation
+
+- (id)initWithFrame:(CGRect)frame 
+{
     self = [super initWithFrame:frame];
     
-    if (self) {
-        _lineHeight = 10;
+    if (self) 
+    {
+        [self setup];
     }
     
     return self;
 }
 
-- (void)drawTextInRect:(CGRect)rect {
+- (id)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super initWithCoder:aDecoder];
+    
+    if(self)
+    {
+        [self setup];
+    }
+    
+    return self;
+}
+
+
+#pragma mark - Drawing
+
+- (void)drawTextInRect:(CGRect)rect 
+{
     NSArray *slicedStrings = [self stringsFromText:self.text];
     [self.textColor set];
     
-    for (int i = 0; i < slicedStrings.count; i++) {
-        if (i + 1 > self.numberOfLines && self.numberOfLines != 0)
-            break;
+    int numLines = slicedStrings.count;
+    if (numLines > self.numberOfLines && self.numberOfLines != 0)
+    {
+        numLines = self.numberOfLines;
+    }
+    
+    int drawY = (self.frame.size.height / 2 - (_lineHeight * numLines) / 2) - kAlignmentBuffer;    
+    
+    for (int i = 0; i < numLines; i++) 
+    {        
         
         NSString *line = [slicedStrings objectAtIndex:i];
         
-        // calculate drawHeight based on anchor
-        int drawHeight = _anchorBottom ? (self.frame.size.height - (slicedStrings.count - i) * _lineHeight) : i * _lineHeight;        
-        
-        // calculate drawWidth based on textAlignment
-        int drawWidth = 0;
-        if (self.textAlignment == UITextAlignmentCenter) {
-            drawWidth = floorf((self.frame.size.width - [line sizeWithFont:self.font].width) / 2);
-        } else if (self.textAlignment == UITextAlignmentRight) {
-            drawWidth = (self.frame.size.width - [line sizeWithFont:self.font].width);
+        // calculate draw Y based on alignment
+        switch (_verticalAlignment) 
+        {
+            case MSLabelVerticalAlignmentTop:
+            {
+                drawY = i * _lineHeight;
+            }
+                break;
+            case MSLabelVerticalAlignmentMiddle:
+            {
+                if(i > 0)
+                {
+                    drawY += _lineHeight;            
+                }
+            }
+                break;
+            case MSLabelVerticalAlignmentBottom:
+            {
+                drawY = (self.frame.size.height - ((i + 1) * _lineHeight)) - kAlignmentBuffer;
+            }
+                break;
+            default:
+            {
+                if(i > 0)
+                {
+                    drawY += _lineHeight;            
+                }
+            }
+                break;
         }
         
-        [line drawAtPoint:CGPointMake(drawWidth, drawHeight) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
+        // calculate draw X based on textAlignmentment
+        int drawX = 0; 
+        
+        if (self.textAlignment == UITextAlignmentCenter) 
+        {
+            drawX = floorf((self.frame.size.width - [line sizeWithFont:self.font].width) / 2);
+        } 
+        else if (self.textAlignment == UITextAlignmentRight) 
+        {
+            drawX = (self.frame.size.width - [line sizeWithFont:self.font].width);
+        }
+        
+        [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
     }
 }
 
+
 #pragma mark - Properties
 
-- (void)setLineHeight:(int)lineHeight {
-    if (_lineHeight == lineHeight) { return; }
+- (void)setLineHeight:(int)lineHeight 
+{
+    if (_lineHeight == lineHeight) 
+    { 
+        return; 
+    }
+    
     _lineHeight = lineHeight;
     [self setNeedsDisplay];
 }
 
+
 #pragma mark - Private Methods
 
-- (NSArray *)stringsFromText:(NSString *)string {
+- (void)setup
+{
+    _lineHeight = 10;
+    _verticalAlignment = MSLabelVerticalAlignmentMiddle;
+}
+
+- (NSArray *)stringsFromText:(NSString *)string 
+{
     NSMutableArray *stringsArray = [[[string componentsSeparatedByString:@" "] mutableCopy] autorelease];
     NSMutableArray *slicedString = [NSMutableArray array];
     
-    while (stringsArray.count != 0) {
+    while (stringsArray.count != 0) 
+    {
         NSString *line = [NSString stringWithString:@""];
         NSMutableIndexSet *wordsToRemove = [NSMutableIndexSet indexSet];
         
-        for (int i = 0; i < [stringsArray count]; i++) {
+        for (int i = 0; i < [stringsArray count]; i++) 
+        {
             NSString *word = [stringsArray objectAtIndex:i];
             
-            if ([[line stringByAppendingFormat:@"%@ ", word] sizeWithFont:self.font].width <= self.frame.size.width) {
+            if ([[line stringByAppendingFormat:@"%@ ", word] sizeWithFont:self.font].width <= self.frame.size.width) 
+            {
                 line = [line stringByAppendingFormat:@"%@ ", word];
                 [wordsToRemove addIndex:i];
-            } else {
-                if (line.length == 0) {
+            } 
+            else 
+            {
+                if (line.length == 0) 
+                {
                     line = [line stringByAppendingFormat:@"%@ ", word];
                     [wordsToRemove addIndex:i];
                 }
                 break;
             }
         }
+        
         [slicedString addObject:[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
         [stringsArray removeObjectsAtIndexes:wordsToRemove];
     }
     
-    if (slicedString.count > self.numberOfLines && self.numberOfLines != 0) {
+    if (slicedString.count > self.numberOfLines && self.numberOfLines != 0) 
+    {
         NSString *line = [slicedString objectAtIndex:(self.numberOfLines - 1)];
         line = [line stringByReplacingCharactersInRange:NSMakeRange(line.length - 3, 3) withString:@"..."];
         [slicedString removeObjectAtIndex:(self.numberOfLines - 1)];
