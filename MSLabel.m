@@ -8,6 +8,9 @@
 
 #import "MSLabel.h"
 
+// small buffer to allow for characters like g,y etc 
+static const int kAlignBuffer = 5;
+
 @interface MSLabel ()
 
 - (void)setup;
@@ -61,7 +64,7 @@
         numLines = self.numberOfLines;
     }
     
-    int drawY = self.frame.size.height / 2 - (_lineHeight * numLines) / 2;    
+    int drawY = (self.frame.size.height / 2 - (_lineHeight * numLines) / 2) - kAlignBuffer;    
     
     for (int i = 0; i < numLines; i++) 
     {        
@@ -86,7 +89,7 @@
                 break;
             case MSLabelVerticalAlignBottom:
             {
-                drawY = self.frame.size.height - ((i + 1) * _lineHeight);
+                drawY = (self.frame.size.height - ((i + 1) * _lineHeight)) - kAlignBuffer;
             }
                 break;
             default:
@@ -135,7 +138,7 @@
 - (void)setup
 {
     _lineHeight = 10;
-    _verticalAlign = MSLabelVerticalAlignMiddle;
+    _verticalAlign = MSLabelVerticalAlignBottom;
 }
 
 - (NSArray *)stringsFromText:(NSString *)string 
