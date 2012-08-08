@@ -9,10 +9,10 @@
 #import <UIKit/UIKit.h>
 
 typedef enum {
-    MSLabelVerticalAlignTop,
-    MSLabelVerticalAlignMiddle,
-    MSLabelVerticalAlignBottom
-} MSLabelVerticalAlign;
+    MSLabelVerticalAlignmentTop,
+    MSLabelVerticalAlignmentMiddle,
+    MSLabelVerticalAlignmentBottom
+} MSLabelVerticalAlignment;
 
 @interface MSLabel : UILabel 
 {
@@ -20,6 +20,6 @@ typedef enum {
 }
 
 @property (nonatomic, assign) int lineHeight;
-@property (nonatomic, assign) MSLabelVerticalAlign verticalAlign;
+@property (nonatomic, assign) MSLabelVerticalAlignment verticalAlignment;
 
 @end
