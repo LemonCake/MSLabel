@@ -143,17 +143,7 @@ static const int kAlignmentBuffer = 5;
 
 - (NSArray *)stringsFromText:(NSString *)string 
 {
-    
-    NSRange theRange = {0, 1};
-    
-    NSMutableArray *stringsArray  = [NSMutableArray array];
-    
-    for ( NSInteger i = 0; i < [string length]; i++) 
-    {
-        theRange.location = i;
-        [stringsArray addObject:[string substringWithRange:theRange]];
-    }
-    
+    NSMutableArray *stringsArray = [[[string componentsSeparatedByString:@" "] mutableCopy] autorelease];
     NSMutableArray *slicedString = [NSMutableArray array];
     
     while (stringsArray.count != 0) 
@@ -165,16 +155,16 @@ static const int kAlignmentBuffer = 5;
         {
             NSString *word = [stringsArray objectAtIndex:i];
             
-            if ([[line stringByAppendingFormat:@"%@", word] sizeWithFont:self.font].width <= self.frame.size.width) 
+            if ([[line stringByAppendingFormat:@"%@ ", word] sizeWithFont:self.font].width <= self.frame.size.width) 
             {
-                line = [line stringByAppendingFormat:@"%@", word];
+                line = [line stringByAppendingFormat:@"%@ ", word];
                 [wordsToRemove addIndex:i];
             } 
             else 
             {
                 if (line.length == 0) 
                 {
-                    line = [line stringByAppendingFormat:@"%@", word];
+                    line = [line stringByAppendingFormat:@"%@ ", word];
                     [wordsToRemove addIndex:i];
                 }
                 break;
