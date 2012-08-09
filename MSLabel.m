@@ -56,7 +56,12 @@ static const int kAlignmentBuffer = 5;
 - (void)drawTextInRect:(CGRect)rect 
 {
     NSArray *slicedStrings = [self stringsFromText:self.text];
-    [self.textColor set];
+    if (self.highlighted) {
+        [self.highlightedTextColor set]; 
+    }
+    else {
+        [self.textColor set];   
+    }
     
     int numLines = slicedStrings.count;
     if (numLines > self.numberOfLines && self.numberOfLines != 0)
