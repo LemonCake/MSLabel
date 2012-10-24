@@ -178,7 +178,11 @@ static const int kAlignmentBuffer = 5;
     if (slicedString.count > self.numberOfLines && self.numberOfLines != 0) 
     {
         NSString *line = [slicedString objectAtIndex:(self.numberOfLines - 1)];
-        line = [line stringByReplacingCharactersInRange:NSMakeRange(line.length - 3, 3) withString:@"..."];
+        if ([line length] >= 3) {
+            line = [line stringByReplacingCharactersInRange:NSMakeRange(line.length - 3, 3) withString:@"..."];
+        } else {
+            line = @"...";
+        }
         [slicedString removeObjectAtIndex:(self.numberOfLines - 1)];
         [slicedString insertObject:line atIndex:(self.numberOfLines - 1)];
     }
