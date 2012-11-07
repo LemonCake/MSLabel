@@ -94,7 +94,7 @@ static const int kAlignmentBuffer = 5;
                 break;
             case MSLabelVerticalAlignmentBottom:
             {
-                drawY = (self.frame.size.height - ((i + 1) * _lineHeight)) - kAlignmentBuffer;
+                drawY = (self.frame.size.height - _lineHeight * numLines) + ((i  * _lineHeight) - kAlignmentBuffer);
             }
                 break;
             default:
