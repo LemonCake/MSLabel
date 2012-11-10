@@ -116,6 +116,8 @@ static const int kAlignmentBuffer = 5;
         
         drawX = drawX < 0 ? 0 : drawX;
         
+        CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), self.shadowOffset, 0, self.shadowColor.CGColor);
+        
         [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
     }
 }
