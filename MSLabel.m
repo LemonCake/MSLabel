@@ -183,7 +183,10 @@ static const int kAlignmentBuffer = 5;
         [characterArray removeObjectsAtIndexes:charsToRemove];
     }
     
-    slicedString = [self stringsWithWordsWrappedFromArray:slicedString];
+    if (self.lineBreakMode == UILineBreakModeWordWrap) {
+        slicedString = [self stringsWithWordsWrappedFromArray:slicedString];
+    }
+    
     
     return slicedString;
 }
