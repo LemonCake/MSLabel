@@ -14,6 +14,7 @@
 @property (nonatomic, retain) IBOutlet MSLabel *exampleLabel1;
 @property (nonatomic, retain) IBOutlet MSLabel *exampleLabel2;
 @property (nonatomic, retain) IBOutlet MSLabel *exampleLabel3;
+@property (nonatomic, retain) IBOutlet MSLabel *exampleLabel4;
 
 @end
 
@@ -22,6 +23,7 @@
 @synthesize exampleLabel1;
 @synthesize exampleLabel2;
 @synthesize exampleLabel3;
+@synthesize exampleLabel4;
 
 - (void)viewDidLoad
 {
@@ -40,6 +42,9 @@
     exampleLabel3.lineHeight = 30;
     exampleLabel3.verticalAlignment = MSLabelVerticalAlignmentBottom;
     exampleLabel3.text = exampleString;
+    
+    exampleLabel4.text = exampleString;
+    exampleLabel4.numberOfLines = 3;
 }
 
 - (void)didReceiveMemoryWarning
