@@ -158,15 +158,15 @@ static const int kAlignmentBuffer = 5;
             CGFloat stringWidth = [[line stringByAppendingFormat:@"%@", character] sizeWithFont:self.font].width;
             
             // shrink font to fit text as best as we can
-            if(stringWidth > (self.frame.size.width - 10)) {
-                CGFloat fontSize = self.font.pointSize;
-                
-                while(stringWidth > (self.frame.size.width - 10) && fontSize >= self.minimumFontSize) {
-                    self.font = [UIFont fontWithName:self.font.fontName size:fontSize--];
-                    _lineHeight = self.font.pointSize;
-                    stringWidth = [[line stringByAppendingFormat:@"%@", character] sizeWithFont:self.font].width;
-                }
-            }
+//            if(stringWidth > (self.frame.size.width - 10)) {
+//                CGFloat fontSize = self.font.pointSize;
+//                
+//                while(stringWidth > (self.frame.size.width - 10) && fontSize >= self.minimumFontSize) {
+//                    self.font = [UIFont fontWithName:self.font.fontName size:fontSize--];
+//                    _lineHeight = self.font.pointSize;
+//                    stringWidth = [[line stringByAppendingFormat:@"%@", character] sizeWithFont:self.font].width;
+//                }
+//            }
             
             if (stringWidth <= (self.frame.size.width - 10)) {
                 line = [line stringByAppendingFormat:@"%@", character];

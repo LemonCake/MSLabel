@@ -34,6 +34,7 @@
     exampleLabel1.lineHeight = 20;
     exampleLabel1.verticalAlignment = MSLabelVerticalAlignmentTop;
     exampleLabel1.text = exampleString;
+    exampleLabel1.font = [UIFont fontWithName:@"HelveticaNeue" size:22];
     
     exampleLabel2.lineHeight = 15;
     exampleLabel2.verticalAlignment = MSLabelVerticalAlignmentMiddle;
