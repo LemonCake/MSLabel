@@ -146,6 +146,11 @@ static const int kAlignmentBuffer = 5;
 }
 
 - (NSArray *)stringsFromText:(NSString *)string {
+    
+    if (self.lineBreakMode == UILineBreakModeWordWrap) {
+        return [self stringsWithWordsWrappedFromString:string];
+    }
+    
     NSMutableArray *characterArray = [self arrayOfCharactersInString:string];
     NSMutableArray *slicedString = [NSMutableArray array];
     
@@ -193,31 +198,57 @@ static const int kAlignmentBuffer = 5;
     return slicedString;
 }
 
-- (NSMutableArray *)stringsWithWordsWrappedFromArray:(NSArray *)strings {
-    NSMutableArray *newStrings = [NSMutableArray arrayWithArray:strings];
-    for (int i = 0; i < strings.count; i++) {
-        if(i == 0) { continue; }
-        NSString *lastWord = [self lastWordInString:[strings objectAtIndex:i - 1]];
-        
-        // Fix word wrapping
-        if(lastWord.length > 0) {
-            NSString *lastString = [newStrings objectAtIndex:i - 1];
-            NSString *updatedString = [lastString substringToIndex:lastString.length - (lastWord.length + 1)];
-            [newStrings replaceObjectAtIndex:i-1 withObject:updatedString];
-            NSString *currentString = [newStrings objectAtIndex:i];
-            currentString = [NSString stringWithFormat:@"%@%@",lastWord,currentString];
-            [newStrings replaceObjectAtIndex:i withObject:currentString];
+- (NSMutableArray *)stringsWithWordsWrappedFromString:(NSString *)string {
+    
+    NSCharacterSet *delimiterCharacterSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    NSArray *words = [string componentsSeparatedByCharactersInSet:delimiterCharacterSet];
+    
+    NSMutableArray *outputLines = [[NSMutableArray alloc] init];
+    
+    int lineNumber = 0;
+    
+    for (id word in words) {
+        if ([outputLines count] == 0) {
+            [outputLines insertObject:word atIndex:lineNumber];
+            continue;
+            
         }
+        
+        NSString *line = [outputLines objectAtIndex:lineNumber];
+        NSString *newLine = [NSString stringWithFormat:@"%@ %@", line, word];
+        
+        
+        
+        // Break to new line when adding another word to this line will make it too long
+        // so long as we're below the total desired line count
+        
+        // XXX: I assume self.numberOfLines == 0 is unlimited
+        if ([newLine sizeWithFont:self.font].width > self.frame.size.width && (lineNumber < self.numberOfLines - 1 || self.numberOfLines == 0)) {
+            lineNumber++;
+            [outputLines insertObject:word atIndex:lineNumber];
+        } else {
+            [outputLines replaceObjectAtIndex:lineNumber withObject:newLine];
+        }
+        
     }
     
-    if (newStrings.count > self.numberOfLines && self.numberOfLines != 0) {
-        NSString *line = [newStrings objectAtIndex:(self.numberOfLines - 1)];
-        line = [line stringByReplacingCharactersInRange:NSMakeRange(line.length - 3, 3) withString:@"..."];
-        [newStrings removeObjectAtIndex:(self.numberOfLines - 1)];
-        [newStrings insertObject:line atIndex:(self.numberOfLines - 1)];
+    // Truncate the last line adding an ellipsis (...) until it is within our desired width
+    NSString *lastLine = [outputLines lastObject];
+    if ([lastLine sizeWithFont:self.font].width > self.frame.size.width) {
+        // First, attempt to just replace the last 3 chars with ellipsis since the ellipsis might be
+        // sufficiently narrower than the original chars
+        lastLine = [lastLine stringByReplacingCharactersInRange:NSMakeRange(lastLine.length - 3, 3) withString:@"..."];
+    }
+    while ([lastLine sizeWithFont:self.font].width > self.frame.size.width) {
+        // If that failed, remove one character at a time from the end of the string
+        // until we reach the desired length.
+        lastLine = [lastLine stringByReplacingCharactersInRange:NSMakeRange(lastLine.length - 4, 4) withString:@"..."];
     }
     
-    return newStrings;
+    // Replace last line with its ellpsis'ed version.
+    [outputLines replaceObjectAtIndex:[outputLines count] - 1 withObject:lastLine];
+    
+    return outputLines;
 }
 
 - (NSString *)lastWordInString:(NSString *)string {
