@@ -180,8 +180,12 @@ static const int kAlignmentBuffer = 5;
                 break;
             }
         }
-        
+      if (self.lineBreakMode == UILineBreakModeWordWrap) {
+        [slicedString addObject:line];
+      } else {
         [slicedString addObject:[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
+      }
+      
         [characterArray removeObjectsAtIndexes:charsToRemove];
     }
     
