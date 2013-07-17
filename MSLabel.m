@@ -203,7 +203,7 @@ static const int kAlignmentBuffer = 5;
     NSCharacterSet *delimiterCharacterSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     NSArray *words = [string componentsSeparatedByCharactersInSet:delimiterCharacterSet];
     
-    NSMutableArray *outputLines = [[NSMutableArray alloc] init];
+    NSMutableArray *outputLines = [[[NSMutableArray alloc] init] autorelease];
     
     int lineNumber = 0;
     
