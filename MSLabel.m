@@ -121,6 +121,8 @@ static const int kAlignmentBuffer = 5;
         CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), self.shadowOffset, 0, self.shadowColor.CGColor);
         
         if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            // NOTE: Used to be UILineBreakModeClip but is now deprecated. Checking the headers UILineBreakModeClip == NSLineBreakByClipping,
+            // so this is safe even below iOS 6 if using xcode > 4.0.
             [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:NSLineBreakByClipping baselineAdjustment:UIBaselineAdjustmentNone];
         } else {
             NSMutableParagraphStyle *paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
@@ -165,7 +167,7 @@ static const int kAlignmentBuffer = 5;
 
 - (NSArray *)stringsFromText:(NSString *)string {
     
-    if (self.lineBreakMode == UILineBreakModeWordWrap) {
+    if (self.lineBreakMode == (SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeWordWrap : NSLineBreakByWordWrapping)) {
         return [self stringsWithWordsWrappedFromString:string];
     }
     
@@ -203,7 +205,7 @@ static const int kAlignmentBuffer = 5;
                 break;
             }
         }
-      if (self.lineBreakMode == UILineBreakModeWordWrap) {
+      if (self.lineBreakMode == (SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeWordWrap : NSLineBreakByWordWrapping)) {
         [slicedString addObject:line];
       } else {
         [slicedString addObject:[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
@@ -212,7 +214,7 @@ static const int kAlignmentBuffer = 5;
         [characterArray removeObjectsAtIndexes:charsToRemove];
     }
     
-    if (self.lineBreakMode == UILineBreakModeWordWrap) {
+    if (self.lineBreakMode == (SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeWordWrap : NSLineBreakByWordWrapping)) {
         slicedString = [self stringsWithWordsWrappedFromArray:slicedString];
     }
     
