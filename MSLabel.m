@@ -120,7 +120,23 @@ static const int kAlignmentBuffer = 5;
         
         CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), self.shadowOffset, 0, self.shadowColor.CGColor);
         
-        [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:(SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeClip : NSLineBreakByClipping) baselineAdjustment:UIBaselineAdjustmentNone];
+        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode: NSLineBreakByClipping baselineAdjustment:UIBaselineAdjustmentNone];
+        } else {
+            NSMutableParagraphStyle *paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
+            paragraphStyle.lineBreakMode = NSLineBreakByClipping;
+            
+            NSShadow *shadowStyle = [[[NSShadow alloc] init] autorelease];
+            shadowStyle.shadowColor = self.shadowColor;
+            shadowStyle.shadowOffset = self.shadowOffset;
+            
+            [line drawAtPoint:CGPointMake(drawX, drawY) withAttributes:@{
+                                                                         NSParagraphStyleAttributeName : paragraphStyle,
+                                                                         NSFontAttributeName : self.font,
+                                                                         NSForegroundColorAttributeName : self.textColor,
+                                                                         NSShadowAttributeName : shadowStyle
+                                                                         }];
+        }
     }
 }
 
