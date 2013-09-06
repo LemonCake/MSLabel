@@ -8,6 +8,8 @@
 
 #import "MSLabel.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 // small buffer to allow for characters like g,y etc 
 static const int kAlignmentBuffer = 5;
 
@@ -118,7 +120,7 @@ static const int kAlignmentBuffer = 5;
         
         CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), self.shadowOffset, 0, self.shadowColor.CGColor);
         
-        [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
+        [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:(SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeClip : NSLineBreakByClipping) baselineAdjustment:UIBaselineAdjustmentNone];
     }
 }
 
