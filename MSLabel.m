@@ -18,7 +18,6 @@ static const int kAlignmentBuffer = 5;
 - (void)setup;
 - (NSArray *)stringsFromText:(NSString *)string;
 
-- (NSMutableArray *)stringsWithWordsWrappedFromArray:(NSArray *)strings;
 - (NSMutableArray *)arrayOfCharactersInString:(NSString *)string;
 - (NSString *)lastWordInString:(NSString *)string;
 
@@ -213,11 +212,6 @@ static const int kAlignmentBuffer = 5;
       
         [characterArray removeObjectsAtIndexes:charsToRemove];
     }
-    
-    if (self.lineBreakMode == (SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeWordWrap : NSLineBreakByWordWrapping)) {
-        slicedString = [self stringsWithWordsWrappedFromArray:slicedString];
-    }
-    
     
     return slicedString;
 }
