@@ -8,6 +8,8 @@
 
 #import "MSLabel.h"
 
+#define SYSTEM_VERSION_LESS_THAN(v)                 ([[[UIDevice currentDevice] systemVersion] compare:v options:NSNumericSearch] == NSOrderedAscending)
+
 // small buffer to allow for characters like g,y etc 
 static const int kAlignmentBuffer = 5;
 
@@ -16,7 +18,6 @@ static const int kAlignmentBuffer = 5;
 - (void)setup;
 - (NSArray *)stringsFromText:(NSString *)string;
 
-- (NSMutableArray *)stringsWithWordsWrappedFromArray:(NSArray *)strings;
 - (NSMutableArray *)arrayOfCharactersInString:(NSString *)string;
 - (NSString *)lastWordInString:(NSString *)string;
 
@@ -118,7 +119,25 @@ static const int kAlignmentBuffer = 5;
         
         CGContextSetShadowWithColor(UIGraphicsGetCurrentContext(), self.shadowOffset, 0, self.shadowColor.CGColor);
         
-        [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:UILineBreakModeClip baselineAdjustment:UIBaselineAdjustmentNone];
+        if (SYSTEM_VERSION_LESS_THAN(@"7.0")) {
+            // NOTE: Used to be UILineBreakModeClip but is now deprecated. Checking the headers UILineBreakModeClip == NSLineBreakByClipping,
+            // so this is safe even below iOS 6 if using xcode > 4.0.
+            [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:NSLineBreakByClipping baselineAdjustment:UIBaselineAdjustmentNone];
+        } else {
+            NSMutableParagraphStyle *paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
+            paragraphStyle.lineBreakMode = NSLineBreakByClipping;
+            
+            NSShadow *shadowStyle = [[[NSShadow alloc] init] autorelease];
+            shadowStyle.shadowColor = self.shadowColor;
+            shadowStyle.shadowOffset = self.shadowOffset;
+            
+            [line drawAtPoint:CGPointMake(drawX, drawY) withAttributes:@{
+                                                                         NSParagraphStyleAttributeName : paragraphStyle,
+                                                                         NSFontAttributeName : self.font,
+                                                                         NSForegroundColorAttributeName : self.textColor,
+                                                                         NSShadowAttributeName : shadowStyle
+                                                                         }];
+        }
     }
 }
 
@@ -147,7 +166,7 @@ static const int kAlignmentBuffer = 5;
 
 - (NSArray *)stringsFromText:(NSString *)string {
     
-    if (self.lineBreakMode == UILineBreakModeWordWrap) {
+    if (self.lineBreakMode == (SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeWordWrap : NSLineBreakByWordWrapping)) {
         return [self stringsWithWordsWrappedFromString:string];
     }
     
@@ -185,7 +204,7 @@ static const int kAlignmentBuffer = 5;
                 break;
             }
         }
-      if (self.lineBreakMode == UILineBreakModeWordWrap) {
+      if (self.lineBreakMode == (SYSTEM_VERSION_LESS_THAN(@"6.0") ? UILineBreakModeWordWrap : NSLineBreakByWordWrapping)) {
         [slicedString addObject:line];
       } else {
         [slicedString addObject:[line stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]]];
@@ -193,11 +212,6 @@ static const int kAlignmentBuffer = 5;
       
         [characterArray removeObjectsAtIndexes:charsToRemove];
     }
-    
-    if (self.lineBreakMode == UILineBreakModeWordWrap) {
-        slicedString = [self stringsWithWordsWrappedFromArray:slicedString];
-    }
-    
     
     return slicedString;
 }
