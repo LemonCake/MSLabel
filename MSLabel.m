@@ -124,10 +124,10 @@ static const int kAlignmentBuffer = 5;
             // so this is safe even below iOS 6 if using xcode > 4.0.
             [line drawAtPoint:CGPointMake(drawX, drawY) forWidth:self.frame.size.width withFont:self.font fontSize:self.font.pointSize lineBreakMode:NSLineBreakByClipping baselineAdjustment:UIBaselineAdjustmentNone];
         } else {
-            NSMutableParagraphStyle *paragraphStyle = [[[NSMutableParagraphStyle alloc] init] autorelease];
+            NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
             paragraphStyle.lineBreakMode = NSLineBreakByClipping;
             
-            NSShadow *shadowStyle = [[[NSShadow alloc] init] autorelease];
+            NSShadow *shadowStyle = [[NSShadow alloc] init];
             shadowStyle.shadowColor = self.shadowColor;
             shadowStyle.shadowOffset = self.shadowOffset;
             
@@ -221,7 +221,7 @@ static const int kAlignmentBuffer = 5;
     NSCharacterSet *delimiterCharacterSet = [NSCharacterSet whitespaceAndNewlineCharacterSet];
     NSArray *words = [string componentsSeparatedByCharactersInSet:delimiterCharacterSet];
     
-    NSMutableArray *outputLines = [[[NSMutableArray alloc] init] autorelease];
+    NSMutableArray *outputLines = [[NSMutableArray alloc] init];
     
     int lineNumber = 0;
     
