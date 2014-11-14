@@ -1,1 +1,9 @@
 .DS_Store
+*.perspective
+*.perspectivev3
+*.pbxuser
+*.xcworkspace
+xcuserdata
+build/
+DerivedData
+
